@@ -1,13 +1,24 @@
-# GitHub Contribution Art Generator
+﻿# Contribution Art Generator
 
-A pixel editor that turns art into an empty-commit script for a GitHub contribution graph.
+A contribution-grid editor that generates dated empty-commit scripts for pixel artwork.
 
-## Features
+## Highlights
 
-- 53-week by 7-day grid matching GitHub contribution layouts.
-- Click-to-toggle cells and text stencil generation.
-- Bash script output with dated empty commits.
+- Standalone browser app with no build step or package install.
+- Responsive layout for desktop and mobile screens.
+- Polished interface with clear controls, readable typography, and keyboard-friendly focus states.
+- Local-first behavior where persistence is needed.
 
-## Run
+## Run locally
 
-Open `index.html` in a browser.
+Open index.html directly in a browser, or serve the folder with:
+
+`ash
+python -m http.server 5173
+`
+
+Then open the local URL for this repository.
+
+## Deployment
+
+Deploy the repository root as a static site with GitHub Pages, Netlify, Vercel, or any static host. The entry point is index.html.

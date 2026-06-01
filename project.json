@@ -1,7 +1,7 @@
 ﻿{
-  "name": "vibe-coding-07-github-contribution-art-generator",
-  "title": "GitHub Contribution Art Generator",
-  "description": "A contribution-grid editor that generates dated commit scripts.",
-  "type": "static-browser-app"
+    "title":  "Contribution Art Generator",
+    "description":  "A contribution-grid editor that generates dated empty-commit scripts for pixel artwork.",
+    "name":  "contribution-art-generator",
+    "type":  "static-browser-app"
 }
 
