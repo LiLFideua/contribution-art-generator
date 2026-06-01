@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>GitHub Contribution Art Generator</title>
+  <style>
+    :root { color-scheme: dark; --bg:#0d1117; --panel:#161b22; --text:#e6edf3; --muted:#8b949e; --cell:#1f6f3a; --accent:#3fb950; }
+    * { box-sizing:border-box; }
+    body { margin:0; min-height:100vh; background:linear-gradient(135deg,#0d1117,#172332); color:var(--text); font:14px/1.45 Inter, system-ui, sans-serif; }
+    main { width:min(1180px, calc(100% - 24px)); margin:0 auto; padding:24px 0; display:grid; grid-template-columns:1fr 380px; gap:14px; }
+    header { grid-column:1/-1; display:flex; justify-content:space-between; gap:12px; align-items:end; flex-wrap:wrap; }
+    h1 { margin:0; font-size:clamp(2rem, 5vw, 4rem); line-height:1; letter-spacing:0; }
+    .panel { border:1px solid #30363d; border-radius:8px; background:var(--panel); padding:14px; }
+    .grid { display:grid; grid-template-columns:repeat(53, 1fr); gap:3px; }
+    .cell { aspect-ratio:1; border:1px solid #30363d; border-radius:2px; background:#0d1117; cursor:pointer; min-width:8px; }
+    .cell.on { background:var(--accent); border-color:#56d364; }
+    textarea { width:100%; min-height:360px; border:1px solid #30363d; border-radius:8px; background:#0d1117; color:var(--text); padding:12px; font:12px/1.45 ui-monospace, Consolas, monospace; }
+    button, input { border:1px solid #30363d; border-radius:8px; background:#0d1117; color:var(--text); padding:9px 11px; font:inherit; }
+    button { cursor:pointer; }
+    .tools { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:12px; }
+    label { display:grid; gap:5px; color:var(--muted); margin-bottom:10px; }
+    @media (max-width:920px) { main { grid-template-columns:1fr; } .grid { gap:2px; } }
+  </style>
+</head>
+<body>
+  <main>
+    <header><div><h1>Contribution Art</h1><p>Draw a 53 by 7 contribution graph and generate empty commit commands.</p></div></header>
+    <section class="panel">
+      <div class="tools">
+        <button id="clear">Clear</button><button id="fill">Fill text</button><button id="copy">Copy script</button>
+      </div>
+      <div class="grid" id="grid" aria-label="Pixel grid"></div>
+    </section>
+    <aside class="panel">
+      <label>Text stencil<input id="text" value="VIBE"></label>
+      <label>Start Sunday<input id="start" type="date"></label>
+      <label>Commit message<input id="message" value="draw contribution art"></label>
+      <textarea id="script" spellcheck="false"></textarea>
+    </aside>
+  </main>
+  <script>
+    const grid = document.querySelector("#grid"), script = document.querySelector("#script");
+    const cells = Array.from({ length:53 * 7 }, (_, i) => false);
+    function index(x,y) { return y * 53 + x; }
+    function drawGrid() {
+      grid.innerHTML = cells.map((on,i) => `<button class="cell ${on ? "on" : ""}" data-i="${i}" title="week ${i % 53}, day ${Math.floor(i / 53)}"></button>`).join("");
+      buildScript();
+    }
+    function buildScript() {
+      const start = new Date(document.querySelector("#start").value || new Date().toISOString().slice(0,10));
+      const msg = document.querySelector("#message").value.replace(/"/g, "'");
+      const lines = ["#!/usr/bin/env bash", "set -e", "git init"];
+      cells.forEach((on,i) => {
+        if (!on) return;
+        const x = i % 53, y = Math.floor(i / 53), d = new Date(start);
+        d.setDate(start.getDate() + x * 7 + y);
+        lines.push(`GIT_AUTHOR_DATE="${d.toISOString()}" GIT_COMMITTER_DATE="${d.toISOString()}" git commit --allow-empty -m "${msg}"`);
+      });
+      script.value = lines.join("\\n");
+    }
+    grid.addEventListener("click", e => { const cell = e.target.closest(".cell"); if (!cell) return; cells[+cell.dataset.i] = !cells[+cell.dataset.i]; drawGrid(); });
+    document.querySelector("#clear").onclick = () => { cells.fill(false); drawGrid(); };
+    document.querySelector("#copy").onclick = () => navigator.clipboard.writeText(script.value);
+    document.querySelector("#fill").onclick = () => {
+      cells.fill(false);
+      const canvas = document.createElement("canvas"), ctx = canvas.getContext("2d");
+      canvas.width = 53; canvas.height = 7; ctx.fillStyle = "white"; ctx.font = "7px monospace"; ctx.fillText(document.querySelector("#text").value.toUpperCase(), 1, 6);
+      const data = ctx.getImageData(0,0,53,7).data;
+      for (let y = 0; y < 7; y++) for (let x = 0; x < 53; x++) cells[index(x,y)] = data[(y * 53 + x) * 4 + 3] > 0;
+      drawGrid();
+    };
+    document.querySelectorAll("input").forEach(input => input.addEventListener("input", buildScript));
+    const d = new Date(); d.setDate(d.getDate() - d.getDay()); document.querySelector("#start").value = d.toISOString().slice(0,10);
+    drawGrid();
+  </script>
+</body>
+</html>
