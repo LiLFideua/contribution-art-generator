@@ -1,7 +1,23 @@
 ﻿{
-    "title":  "Contribution Art Generator",
-    "description":  "A contribution-grid editor that generates dated empty-commit scripts for pixel artwork.",
+    "entrypoints":  {
+                        "typescript":  "src/project-manifest.ts",
+                        "html":  "index.html",
+                        "javascript":  "assets/app.js",
+                        "css":  "assets/styles.css",
+                        "python":  "scripts/metadata_check.py"
+                    },
     "name":  "contribution-art-generator",
-    "type":  "static-browser-app"
+    "description":  "A contribution-grid editor that generates dated empty-commit scripts for pixel artwork.",
+    "type":  "static-browser-app",
+    "languages":  [
+                      "HTML",
+                      "CSS",
+                      "JavaScript",
+                      "TypeScript",
+                      "Python",
+                      "JSON",
+                      "Markdown"
+                  ],
+    "title":  "Contribution Art Generator"
 }
 
